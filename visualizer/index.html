@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algorithm Visualizer</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div>
+        <label for="category">Choose a category:</label>
+        <select id="category" onchange="loadSubCategory()">
+            <option value="" disabled selected>Select Category</option>
+            <option value="algorithms">Algorithms</option>
+            <option value="data-structures">Data Structures</option>
+        </select>
+        
+        <label for="subCategory">Choose a subcategory:</label>
+        <select id="subCategory" onchange="loadAlgorithm()" disabled>
+            <option value="" disabled selected>Select Subcategory</option>
+        </select>
+        
+        <label for="algorithm">Choose an algorithm/data structure:</label>
+        <select id="algorithm" onchange="loadVisualization()" disabled>
+            <option value="" disabled selected>Select Algorithm/Data Structure</option>
+        </select>
+    </div>
+    <div id="visualizer"></div>
+    <pre id="codeSample"></pre>
+    <script src="scripts/main.js"></script>
+</body>
+</html>
