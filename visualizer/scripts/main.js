@@ -64,13 +64,21 @@ function loadVisualization() {
     visualizerContainer.innerHTML = '';
     codeSampleContainer.textContent = '';
 
-    // Fetch and display the Java code
-    fetch(`../algorithms/${selectedAlgorithm.toLowerCase()}/${selectedAlgorithm}.java`)
-        .then(response => response.text())
+    // Corrected path to fetch Java code
+    fetch(`./algorithms/${selectedAlgorithm.toLowerCase()}/${selectedAlgorithm}.java`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.text();
+        })
         .then(data => {
             codeSampleContainer.textContent = data;
         })
-        .catch(err => console.error(err));
+        .catch(err => {
+            console.error('Failed to fetch Java code:', err);
+            codeSampleContainer.textContent = 'Error: Could not load the Java code.';
+        });
 
     // Visualize the algorithm
     if (selectedAlgorithm === "BubbleSort") {
@@ -123,13 +131,17 @@ function generateArray(size) {
 function visualizeArray(array, container) {
     container.innerHTML = '';
     array.forEach(value => {
-        let bar = document.createElement('div');
-        bar.style.height = `${value}%`;
-        bar.style.width = `${100 / array.length}%`;
-        bar.style.backgroundColor = '#3498db';
-        bar.style.display = 'inline-block';
-        bar.style.margin = '0 1px';
-        container.appendChild(bar);
+        let numberElement = document.createElement('div');
+        numberElement.textContent = value;
+        numberElement.style.display = 'inline-block';
+        numberElement.style.margin = '0 10px';
+        numberElement.style.padding = '10px';
+        numberElement.style.backgroundColor = '#3498db';
+        numberElement.style.color = '#fff';
+        numberElement.style.borderRadius = '5px';
+        numberElement.style.fontSize = '20px';
+        numberElement.style.textAlign = 'center';
+        container.appendChild(numberElement);
     });
 }
 
@@ -140,8 +152,12 @@ function generateBinaryTreeGraph() {
         1: [3, 4],
         2: [5, 6],
         3: [7, 8],
-        4: [9]
-        // Nodes 5, 6, 7, 8, and 9 are leaf nodes with no children
+        4: [9],
+        5: [],
+        6: [],
+        7: [],
+        8: [],
+        9: []
     };
 }
 
@@ -211,6 +227,22 @@ async function bfs(graph, start, container) {
             }
         }
     }
+
+    // Process any remaining nodes not directly connected
+    for (let node in graph) {
+        if (!visited.has(parseInt(node))) {
+            queue.push(parseInt(node));
+        }
+    }
+
+    while (queue.length > 0) {
+        let node = queue.shift();
+        if (!visited.has(node)) {
+            visited.add(node);
+            highlightNode(node, container);
+            await new Promise(resolve => setTimeout(resolve, 1000)); // Pause for visualization
+        }
+    }
 }
 
 async function dfs(graph, start, container) {
@@ -224,11 +256,27 @@ async function dfs(graph, start, container) {
             highlightNode(node, container);
             await new Promise(resolve => setTimeout(resolve, 1000)); // Pause for visualization
 
-            for (let neighbor of graph[node]) {
+            for (let neighbor of graph[node].reverse()) {
                 if (!visited.has(neighbor)) {
                     stack.push(neighbor);
                 }
             }
+        }
+    }
+
+    // Process any remaining nodes not directly connected
+    for (let node in graph) {
+        if (!visited.has(parseInt(node))) {
+            stack.push(parseInt(node));
+        }
+    }
+
+    while (stack.length > 0) {
+        let node = stack.pop();
+        if (!visited.has(node)) {
+            visited.add(node);
+            highlightNode(node, container);
+            await new Promise(resolve => setTimeout(resolve, 1000)); // Pause for visualization
         }
     }
 }
