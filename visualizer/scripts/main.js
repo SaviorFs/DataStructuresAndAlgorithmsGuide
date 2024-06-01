@@ -308,3 +308,43 @@ function highlightNode(node, container) {
     ctx.textBaseline = 'middle';
     ctx.fillText(node, pos.x, pos.y);
 }
+async function bubbleSort(array, container) {
+    let n = array.length;
+    for (let i = 0; i < n - 1; i++) {
+        for (let j = 0; j < n - i - 1; j++) {
+            if (array[j] > array[j + 1]) {
+                [array[j], array[j + 1]] = [array[j + 1], array[j]];
+                visualizeArray(array, container);
+                await new Promise(resolve => setTimeout(resolve, 100));
+            }
+        }
+    }
+    visualizeArray(array, container); // Final state
+}
+async function quickSort(array, low, high, container) {
+    if (low < high) {
+        let pi = await partition(array, low, high, container);
+        await quickSort(array, low, pi - 1, container);
+        await quickSort(array, pi + 1, high, container);
+    }
+    if (low === 0 && high === array.length - 1) {
+        visualizeArray(array, container); // Final state
+    }
+}
+
+async function partition(array, low, high, container) {
+    let pivot = array[high];
+    let i = low - 1;
+    for (let j = low; j < high; j++) {
+        if (array[j] < pivot) {
+            i++;
+            [array[i], array[j]] = [array[j], array[i]];
+            visualizeArray(array, container);
+            await new Promise(resolve => setTimeout(resolve, 100));
+        }
+    }
+    [array[i + 1], array[high]] = [array[high], array[i + 1]];
+    visualizeArray(array, container);
+    await new Promise(resolve => setTimeout(resolve, 100));
+    return i + 1;
+}
