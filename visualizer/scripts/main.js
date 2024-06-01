@@ -6,7 +6,8 @@ const categories = {
 const algorithms = {
     "sorting": ["BubbleSort", "QuickSort"],
     "greedy": ["CoinChange"],
-    "backtracking": ["NQueens"]
+    "backtracking": ["NQueens"],
+    "searching": ["BFS", "DFS"]
     // Add more mappings as needed
 };
 
@@ -64,7 +65,7 @@ function loadVisualization() {
     codeSampleContainer.textContent = '';
 
     // Fetch and display the Java code
-    fetch(`../algorithms/sorting/${selectedAlgorithm}.java`)
+    fetch(`../algorithms/${selectedAlgorithm.toLowerCase()}/${selectedAlgorithm}.java`)
         .then(response => response.text())
         .then(data => {
             codeSampleContainer.textContent = data;
@@ -76,6 +77,10 @@ function loadVisualization() {
         visualizeBubbleSort();
     } else if (selectedAlgorithm === "QuickSort") {
         visualizeQuickSort();
+    } else if (selectedAlgorithm === "BFS") {
+        visualizeBFS();
+    } else if (selectedAlgorithm === "DFS") {
+        visualizeDFS();
     }
 }
 
@@ -91,6 +96,20 @@ function visualizeQuickSort() {
     const array = generateArray(50);
     visualizeArray(array, container);
     quickSort(array.slice(), 0, array.length - 1, container);
+}
+
+function visualizeBFS() {
+    const container = document.getElementById('visualizer');
+    const graph = generateBinaryTreeGraph();
+    drawBinaryTreeGraph(graph, container);
+    bfs(graph, 0, container); // Example starting node
+}
+
+function visualizeDFS() {
+    const container = document.getElementById('visualizer');
+    const graph = generateBinaryTreeGraph();
+    drawBinaryTreeGraph(graph, container);
+    dfs(graph, 0, container); // Example starting node
 }
 
 function generateArray(size) {
@@ -114,40 +133,130 @@ function visualizeArray(array, container) {
     });
 }
 
-async function bubbleSort(array, container) {
-    let n = array.length;
-    for (let i = 0; i < n - 1; i++) {
-        for (let j = 0; j < n - i - 1; j++) {
-            if (array[j] > array[j + 1]) {
-                [array[j], array[j + 1]] = [array[j + 1], array[j]];
-                visualizeArray(array, container);
-                await new Promise(resolve => setTimeout(resolve, 100));
+function generateBinaryTreeGraph() {
+    // Example function to generate a binary tree graph with 10 nodes
+    return {
+        0: [1, 2],
+        1: [3, 4],
+        2: [5, 6],
+        3: [7, 8],
+        4: [9]
+        // Nodes 5, 6, 7, 8, and 9 are leaf nodes with no children
+    };
+}
+
+function drawBinaryTreeGraph(graph, container) {
+    const canvas = document.createElement('canvas');
+    canvas.width = container.clientWidth;
+    canvas.height = container.clientHeight;
+    container.appendChild(canvas);
+    const ctx = canvas.getContext('2d');
+
+    const positions = {
+        0: { x: 300, y: 50 },
+        1: { x: 150, y: 150 },
+        2: { x: 450, y: 150 },
+        3: { x: 75, y: 250 },
+        4: { x: 225, y: 250 },
+        5: { x: 375, y: 250 },
+        6: { x: 525, y: 250 },
+        7: { x: 50, y: 350 },
+        8: { x: 100, y: 350 },
+        9: { x: 200, y: 350 }
+    };
+
+    // Draw nodes
+    for (const node in positions) {
+        const pos = positions[node];
+        ctx.beginPath();
+        ctx.arc(pos.x, pos.y, 20, 0, 2 * Math.PI);
+        ctx.fillStyle = '#3498db';
+        ctx.fill();
+        ctx.stroke();
+        ctx.fillStyle = '#fff';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(node, pos.x, pos.y);
+    }
+
+    // Draw edges
+    for (const node in graph) {
+        const edges = graph[node];
+        const fromPos = positions[node];
+        edges.forEach(edge => {
+            const toPos = positions[edge];
+            ctx.beginPath();
+            ctx.moveTo(fromPos.x, fromPos.y);
+            ctx.lineTo(toPos.x, toPos.y);
+            ctx.stroke();
+        });
+    }
+}
+
+async function bfs(graph, start, container) {
+    let visited = new Set();
+    let queue = [start];
+
+    while (queue.length > 0) {
+        let node = queue.shift();
+        if (!visited.has(node)) {
+            visited.add(node);
+            highlightNode(node, container);
+            await new Promise(resolve => setTimeout(resolve, 1000)); // Pause for visualization
+
+            for (let neighbor of graph[node]) {
+                if (!visited.has(neighbor)) {
+                    queue.push(neighbor);
+                }
             }
         }
     }
 }
 
-async function quickSort(array, low, high, container) {
-    if (low < high) {
-        let pi = await partition(array, low, high, container);
-        await quickSort(array, low, pi - 1, container);
-        await quickSort(array, pi + 1, high, container);
+async function dfs(graph, start, container) {
+    let visited = new Set();
+    let stack = [start];
+
+    while (stack.length > 0) {
+        let node = stack.pop();
+        if (!visited.has(node)) {
+            visited.add(node);
+            highlightNode(node, container);
+            await new Promise(resolve => setTimeout(resolve, 1000)); // Pause for visualization
+
+            for (let neighbor of graph[node]) {
+                if (!visited.has(neighbor)) {
+                    stack.push(neighbor);
+                }
+            }
+        }
     }
 }
 
-async function partition(array, low, high, container) {
-    let pivot = array[high];
-    let i = low - 1;
-    for (let j = low; j < high; j++) {
-        if (array[j] < pivot) {
-            i++;
-            [array[i], array[j]] = [array[j], array[i]];
-            visualizeArray(array, container);
-            await new Promise(resolve => setTimeout(resolve, 100));
-        }
-    }
-    [array[i + 1], array[high]] = [array[high], array[i + 1]];
-    visualizeArray(array, container);
-    await new Promise(resolve => setTimeout(resolve, 100));
-    return i + 1;
+function highlightNode(node, container) {
+    const canvas = container.querySelector('canvas');
+    const ctx = canvas.getContext('2d');
+    const positions = {
+        0: { x: 300, y: 50 },
+        1: { x: 150, y: 150 },
+        2: { x: 450, y: 150 },
+        3: { x: 75, y: 250 },
+        4: { x: 225, y: 250 },
+        5: { x: 375, y: 250 },
+        6: { x: 525, y: 250 },
+        7: { x: 50, y: 350 },
+        8: { x: 100, y: 350 },
+        9: { x: 200, y: 350 }
+    };
+
+    const pos = positions[node];
+    ctx.beginPath();
+    ctx.arc(pos.x, pos.y, 20, 0, 2 * Math.PI);
+    ctx.fillStyle = '#e74c3c';
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillStyle = '#fff';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(node, pos.x, pos.y);
 }

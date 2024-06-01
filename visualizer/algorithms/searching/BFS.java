@@ -2,14 +2,15 @@ import java.util.*;
 
 public class BFS {
     private int V;
-    private LinkedList<Integer> adj[];
+    private LinkedList<Integer>[] adj;
 
     // Constructor
+    @SuppressWarnings("unchecked")
     BFS(int v) {
         V = v;
-        adj = new LinkedList[v];
+        adj = (LinkedList<Integer>[]) new LinkedList[v];
         for (int i = 0; i < v; ++i)
-            adj[i] = new LinkedList();
+            adj[i] = new LinkedList<>();
     }
 
     // Function to add an edge into the graph
@@ -18,7 +19,7 @@ public class BFS {
     }
 
     // Prints BFS traversal from a given source s
-    void BFS(int s) {
+    void bfs(int s) {
         boolean visited[] = new boolean[V];
         LinkedList<Integer> queue = new LinkedList<Integer>();
 
@@ -53,6 +54,6 @@ public class BFS {
         System.out.println("Following is Breadth First Traversal " +
                            "(starting from vertex 2)");
 
-        g.BFS(2);
+        g.bfs(2);
     }
 }
