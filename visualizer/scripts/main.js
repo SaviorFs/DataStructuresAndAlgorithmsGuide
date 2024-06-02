@@ -7,8 +7,8 @@ const algorithms = {
     "sorting": ["BubbleSort", "QuickSort"],
     "greedy": ["CoinChange"],
     "backtracking": ["NQueens"],
-    "searching": ["BFS", "DFS"]
-    // Add more mappings as needed
+    "searching": ["BFS", "DFS"],
+    "arrays": ["Insertion", "Deletion", "Search"]
 };
 
 function loadSubCategory() {
@@ -64,8 +64,14 @@ function loadVisualization() {
     visualizerContainer.innerHTML = '';
     codeSampleContainer.textContent = '';
 
-    // Corrected path to fetch Java code
-    fetch(`./algorithms/${selectedAlgorithm.toLowerCase()}/${selectedAlgorithm}.java`)
+    let filePath;
+    if (["Insertion", "Deletion", "Search"].includes(selectedAlgorithm)) {
+        filePath = `./data-structures/arrays/${selectedAlgorithm}.java`;
+    } else {
+        filePath = `./algorithms/${selectedAlgorithm.toLowerCase()}/${selectedAlgorithm}.java`;
+    }
+
+    fetch(filePath)
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
@@ -80,7 +86,6 @@ function loadVisualization() {
             codeSampleContainer.textContent = 'Error: Could not load the Java code.';
         });
 
-    // Visualize the algorithm
     if (selectedAlgorithm === "BubbleSort") {
         visualizeBubbleSort();
     } else if (selectedAlgorithm === "QuickSort") {
@@ -89,6 +94,12 @@ function loadVisualization() {
         visualizeBFS();
     } else if (selectedAlgorithm === "DFS") {
         visualizeDFS();
+    } else if (selectedAlgorithm === "Insertion") {
+        visualizeInsertion();
+    } else if (selectedAlgorithm === "Deletion") {
+        visualizeDeletion();
+    } else if (selectedAlgorithm === "Search") {
+        visualizeSearch();
     }
 }
 
@@ -110,14 +121,35 @@ function visualizeBFS() {
     const container = document.getElementById('visualizer');
     const graph = generateBinaryTreeGraph();
     drawBinaryTreeGraph(graph, container);
-    bfs(graph, 0, container); // Example starting node
+    bfs(graph, 0, container);
 }
 
 function visualizeDFS() {
     const container = document.getElementById('visualizer');
     const graph = generateBinaryTreeGraph();
     drawBinaryTreeGraph(graph, container);
-    dfs(graph, 0, container); // Example starting node
+    dfs(graph, 0, container);
+}
+
+function visualizeInsertion() {
+    const container = document.getElementById('visualizer');
+    const array = generateArray(10);
+    visualizeArray(array, container);
+    animateInsertion(array, container, 42, 4);
+}
+
+function visualizeDeletion() {
+    const container = document.getElementById('visualizer');
+    const array = generateArray(10);
+    visualizeArray(array, container);
+    animateDeletion(array, container, 4);
+}
+
+function visualizeSearch() {
+    const container = document.getElementById('visualizer');
+    const array = generateArray(10);
+    visualizeArray(array, container);
+    animateSearch(array, container, array[4]);
 }
 
 function generateArray(size) {
@@ -130,9 +162,9 @@ function generateArray(size) {
 
 function visualizeArray(array, container) {
     container.innerHTML = '';
-    array.forEach(value => {
+    array.forEach((value, index) => {
         let numberElement = document.createElement('div');
-        numberElement.textContent = value;
+        numberElement.textContent = value !== undefined ? value : "";
         numberElement.style.display = 'inline-block';
         numberElement.style.margin = '0 10px';
         numberElement.style.padding = '10px';
@@ -141,12 +173,70 @@ function visualizeArray(array, container) {
         numberElement.style.borderRadius = '5px';
         numberElement.style.fontSize = '20px';
         numberElement.style.textAlign = 'center';
+        numberElement.style.width = '40px';
+        numberElement.style.transition = 'background-color 0.5s, opacity 0.5s';
         container.appendChild(numberElement);
     });
 }
 
+async function animateInsertion(array, container, value, index) {
+    visualizeArray(array, container);
+    let elements = container.childNodes;
+    let newElement = document.createElement('div');
+    newElement.textContent = value;
+    newElement.style.display = 'inline-block';
+    newElement.style.margin = '0 10px';
+    newElement.style.padding = '10px';
+    newElement.style.backgroundColor = '#2ecc71';
+    newElement.style.color = '#fff';
+    newElement.style.borderRadius = '5px';
+    newElement.style.fontSize = '20px';
+    newElement.style.textAlign = 'center';
+    newElement.style.width = '40px';
+    newElement.style.opacity = '0';
+    newElement.style.transition = 'opacity 0.5s';
+    
+    if (index >= elements.length) {
+        container.appendChild(newElement);
+    } else {
+        container.insertBefore(newElement, elements[index]);
+    }
+    
+    await new Promise(resolve => setTimeout(resolve, 500));
+    newElement.style.opacity = '1';
+    await new Promise(resolve => setTimeout(resolve, 500));
+}
+
+async function animateDeletion(array, container, index) {
+    visualizeArray(array, container);
+    let elements = container.childNodes;
+    elements[index].style.opacity = '0';
+    await new Promise(resolve => setTimeout(resolve, 500));
+    array.splice(index, 1);
+    visualizeArray(array, container);
+}
+
+async function animateSearch(array, container, value) {
+    for (let i = 0; i < array.length; i++) {
+        let elements = container.childNodes;
+        elements[i].style.backgroundColor = '#f39c12';
+        await new Promise(resolve => setTimeout(resolve, 500));
+        if (array[i] === value) {
+            elements[i].style.backgroundColor = '#e74c3c';
+            await new Promise(resolve => setTimeout(resolve, 500));
+            break;
+        } else {
+            elements[i].style.backgroundColor = '#3498db';
+        }
+    }
+}
+
+function highlightArrayElement(container, index, color = '#e74c3c') {
+    const elements = container.childNodes;
+    elements[index].style.backgroundColor = color;
+}
+
 function generateBinaryTreeGraph() {
-    // Example function to generate a binary tree graph with 10 nodes
     return {
         0: [1, 2],
         1: [3, 4],
@@ -181,7 +271,6 @@ function drawBinaryTreeGraph(graph, container) {
         9: { x: 200, y: 350 }
     };
 
-    // Draw nodes
     for (const node in positions) {
         const pos = positions[node];
         ctx.beginPath();
@@ -195,7 +284,6 @@ function drawBinaryTreeGraph(graph, container) {
         ctx.fillText(node, pos.x, pos.y);
     }
 
-    // Draw edges
     for (const node in graph) {
         const edges = graph[node];
         const fromPos = positions[node];
@@ -218,7 +306,7 @@ async function bfs(graph, start, container) {
         if (!visited.has(node)) {
             visited.add(node);
             highlightNode(node, container);
-            await new Promise(resolve => setTimeout(resolve, 1000)); // Pause for visualization
+            await new Promise(resolve => setTimeout(resolve, 1000));
 
             for (let neighbor of graph[node]) {
                 if (!visited.has(neighbor)) {
@@ -228,7 +316,6 @@ async function bfs(graph, start, container) {
         }
     }
 
-    // Process any remaining nodes not directly connected
     for (let node in graph) {
         if (!visited.has(parseInt(node))) {
             queue.push(parseInt(node));
@@ -240,7 +327,7 @@ async function bfs(graph, start, container) {
         if (!visited.has(node)) {
             visited.add(node);
             highlightNode(node, container);
-            await new Promise(resolve => setTimeout(resolve, 1000)); // Pause for visualization
+            await new Promise(resolve => setTimeout(resolve, 1000));
         }
     }
 }
@@ -254,7 +341,7 @@ async function dfs(graph, start, container) {
         if (!visited.has(node)) {
             visited.add(node);
             highlightNode(node, container);
-            await new Promise(resolve => setTimeout(resolve, 1000)); // Pause for visualization
+            await new Promise(resolve => setTimeout(resolve, 1000));
 
             for (let neighbor of graph[node].reverse()) {
                 if (!visited.has(neighbor)) {
@@ -264,7 +351,6 @@ async function dfs(graph, start, container) {
         }
     }
 
-    // Process any remaining nodes not directly connected
     for (let node in graph) {
         if (!visited.has(parseInt(node))) {
             stack.push(parseInt(node));
@@ -276,7 +362,7 @@ async function dfs(graph, start, container) {
         if (!visited.has(node)) {
             visited.add(node);
             highlightNode(node, container);
-            await new Promise(resolve => setTimeout(resolve, 1000)); // Pause for visualization
+            await new Promise(resolve => setTimeout(resolve, 1000));
         }
     }
 }
