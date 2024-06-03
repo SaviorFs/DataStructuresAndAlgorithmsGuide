@@ -7,7 +7,7 @@ const algorithms = {
     "sorting": ["BubbleSort", "QuickSort"],
     "greedy": ["CoinChange"],
     "backtracking": ["NQueens"],
-    "searching": ["BFS", "DFS"],
+    "searching": ["BFS", "DFS", "Dijkstra"],
     "arrays": ["Insertion", "Deletion", "Search"]
 };
 
@@ -100,6 +100,8 @@ function loadVisualization() {
         visualizeDeletion();
     } else if (selectedAlgorithm === "Search") {
         visualizeSearch();
+    } else if (selectedAlgorithm === "Dijkstra") {
+        visualizeDijkstra();
     }
 }
 
@@ -151,6 +153,80 @@ function visualizeSearch() {
     visualizeArray(array, container);
     animateSearch(array, container, array[4]);
 }
+
+function visualizeDijkstra() {
+    const container = document.getElementById('visualizer');
+    const graph = generateComplexGraph();
+    drawComplexGraph(graph, container);
+    dijkstra(graph, 0, container); // Example starting node
+}
+function generateComplexGraph() {
+    return {
+        nodes: [
+            { id: 0, edges: [{ dest: 1, weight: 2 }, { dest: 2, weight: 4 }, { dest: 5, weight: 10 }] },
+            { id: 1, edges: [{ dest: 2, weight: 1 }, { dest: 3, weight: 7 }, { dest: 4, weight: 3 }] },
+            { id: 2, edges: [{ dest: 3, weight: 2 }, { dest: 6, weight: 8 }] },
+            { id: 3, edges: [{ dest: 4, weight: 1 }, { dest: 7, weight: 6 }] },
+            { id: 4, edges: [{ dest: 5, weight: 5 }, { dest: 8, weight: 2 }] },
+            { id: 5, edges: [{ dest: 9, weight: 3 }] },
+            { id: 6, edges: [{ dest: 7, weight: 3 }] },
+            { id: 7, edges: [{ dest: 8, weight: 1 }] },
+            { id: 8, edges: [{ dest: 9, weight: 2 }] },
+            { id: 9, edges: [] }
+        ]
+    };
+}
+
+
+function drawComplexGraph(graph, container) {
+    const canvas = document.createElement('canvas');
+    canvas.width = container.clientWidth;
+    canvas.height = container.clientHeight;
+    container.appendChild(canvas);
+    const ctx = canvas.getContext('2d');
+
+    const positions = {
+        0: { x: 300, y: 50 },
+        1: { x: 450, y: 100 },
+        2: { x: 500, y: 200 },
+        3: { x: 450, y: 300 },
+        4: { x: 300, y: 350 },
+        5: { x: 150, y: 300 },
+        6: { x: 100, y: 200 },
+        7: { x: 150, y: 100 },
+        8: { x: 250, y: 150 },
+        9: { x: 350, y: 150 }
+    };
+
+    graph.nodes.forEach(node => {
+        const pos = positions[node.id];
+        ctx.beginPath();
+        ctx.arc(pos.x, pos.y, 15, 0, 2 * Math.PI);
+        ctx.fillStyle = '#3498db';
+        ctx.fill();
+        ctx.stroke();
+        ctx.fillStyle = '#fff';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(node.id, pos.x, pos.y);
+    });
+
+    graph.nodes.forEach(node => {
+        const fromPos = positions[node.id];
+        node.edges.forEach(edge => {
+            const toPos = positions[edge.dest];
+            ctx.beginPath();
+            ctx.moveTo(fromPos.x, fromPos.y);
+            ctx.lineTo(toPos.x, toPos.y);
+            ctx.stroke();
+            ctx.fillStyle = '#000';
+            ctx.fillText(edge.weight, (fromPos.x + toPos.x) / 2, (fromPos.y + toPos.y) / 2);
+        });
+    });
+}
+
+
+
 
 function generateArray(size) {
     let array = [];
@@ -434,3 +510,65 @@ async function partition(array, low, high, container) {
     await new Promise(resolve => setTimeout(resolve, 100));
     return i + 1;
 }
+
+
+async function dijkstra(graph, start, container) {
+    const positions = {
+        0: { x: 300, y: 50 },
+        1: { x: 450, y: 100 },
+        2: { x: 500, y: 200 },
+        3: { x: 450, y: 300 },
+        4: { x: 300, y: 350 },
+        5: { x: 150, y: 300 },
+        6: { x: 100, y: 200 },
+        7: { x: 150, y: 100 },
+        8: { x: 250, y: 150 },
+        9: { x: 350, y: 150 }
+    };
+    
+    const canvas = container.querySelector('canvas');
+    const ctx = canvas.getContext('2d');
+
+    let dist = Array(graph.nodes.length).fill(Infinity);
+    dist[start] = 0;
+
+    let visited = new Set();
+    let pq = [{ id: start, dist: 0 }];
+
+    while (pq.length > 0) {
+        pq.sort((a, b) => a.dist - b.dist);
+        let { id: u } = pq.shift();
+        visited.add(u);
+
+        const uPos = positions[u];
+        ctx.beginPath();
+        ctx.arc(uPos.x, uPos.y, 15, 0, 2 * Math.PI);
+        ctx.fillStyle = '#e74c3c';
+        ctx.fill();
+        ctx.stroke();
+        ctx.fillStyle = '#fff';
+        ctx.fillText(u, uPos.x, uPos.y);
+
+        for (let { dest: v, weight } of graph.nodes[u].edges) {
+            if (!visited.has(v) && dist[u] + weight < dist[v]) {
+                dist[v] = dist[u] + weight;
+                pq.push({ id: v, dist: dist[v] });
+
+                // Highlight edge
+                const vPos = positions[v];
+                ctx.beginPath();
+                ctx.moveTo(uPos.x, uPos.y);
+                ctx.lineTo(vPos.x, vPos.y);
+                ctx.strokeStyle = '#e74c3c';
+                ctx.stroke();
+                ctx.fillStyle = '#000';
+                ctx.fillText(weight, (uPos.x + vPos.x) / 2, (uPos.y + vPos.y) / 2);
+                ctx.strokeStyle = '#000'; // Reset to default
+            }
+        }
+
+        await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+}
+
+
