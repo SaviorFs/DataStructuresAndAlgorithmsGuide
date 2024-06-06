@@ -57,16 +57,24 @@ function loadAlgorithm() {
 function loadVisualization() {
     const algorithmSelect = document.getElementById('algorithm');
     const selectedAlgorithm = algorithmSelect.value;
-    
+
     const visualizerContainer = document.getElementById('visualizer');
     const codeSampleContainer = document.getElementById('codeSample');
-    
+
     visualizerContainer.innerHTML = '';
     codeSampleContainer.textContent = '';
 
     let filePath;
     if (["Insertion", "Deletion", "Search"].includes(selectedAlgorithm)) {
         filePath = `./data-structures/arrays/${selectedAlgorithm}.java`;
+    } else if (["BFS", "DFS", "Dijkstra"].includes(selectedAlgorithm)) {
+        filePath = `./algorithms/searching/${selectedAlgorithm}.java`;
+    } else if (["BubbleSort", "QuickSort"].includes(selectedAlgorithm)) {
+        filePath = `./algorithms/sorting/${selectedAlgorithm}.java`;
+    } else if (["CoinChange"].includes(selectedAlgorithm)) {
+        filePath = `./algorithms/greedy/${selectedAlgorithm}.java`;
+    } else if (["NQueens"].includes(selectedAlgorithm)) {
+        filePath = `./algorithms/backtracking/${selectedAlgorithm}.java`;
     } else {
         filePath = `./algorithms/${selectedAlgorithm.toLowerCase()}/${selectedAlgorithm}.java`;
     }
@@ -102,11 +110,174 @@ function loadVisualization() {
         visualizeSearch();
     } else if (selectedAlgorithm === "Dijkstra") {
         visualizeDijkstra();
+    } else if (selectedAlgorithm === "NQueens") {
+        visualizeNQueens();
+    } else if (selectedAlgorithm === "CoinChange") {
+        visualizeCoinChange();
     }
+    
+}
+
+
+function visualizeNQueens() {
+    const container = document.getElementById('visualizer');
+    container.innerHTML = ''; // Clear previous visualization
+
+    const n = 8; // Change this value for different board sizes
+    const solutions = solveNQueens(n);
+
+    // Display only one solution
+    const solution = solutions[0];
+    const boardContainer = document.createElement('div');
+    boardContainer.className = 'solution-container';
+    boardContainer.id = 'solution-container';
+
+    solution.forEach(row => {
+        const rowDiv = document.createElement('div');
+        rowDiv.className = 'row';
+        row.split('').forEach(cell => {
+            const cellDiv = document.createElement('div');
+            cellDiv.className = 'cell';
+            cellDiv.textContent = cell;
+            rowDiv.appendChild(cellDiv);
+        });
+        boardContainer.appendChild(rowDiv);
+    });
+
+    container.appendChild(boardContainer);
+
+    // Solve the N-Queens problem with visualization
+    startVisualization();
+}
+
+function startVisualization() {
+    const container = document.getElementById('visualizer');
+    container.innerHTML = ''; // Clear the solution
+
+    const n = 8; // Change this value for different board sizes
+    const queens = Array(n).fill(-1); // queens[i] represents the column position of the queen in the i-th row
+
+    // Create an empty board
+    const boardContainer = document.createElement('div');
+    boardContainer.className = 'board-container';
+    for (let i = 0; i < n; i++) {
+        const rowDiv = document.createElement('div');
+        rowDiv.className = 'row';
+        for (let j = 0; j < n; j++) {
+            const cellDiv = document.createElement('div');
+            cellDiv.className = 'cell';
+            cellDiv.id = `cell-${i}-${j}`;
+            rowDiv.appendChild(cellDiv);
+        }
+        boardContainer.appendChild(rowDiv);
+    }
+    container.appendChild(boardContainer);
+
+    // Solve the N-Queens problem with visualization
+    solveNQueensWithVisualization(0, queens, n, container);
+}
+
+async function solveNQueensWithVisualization(row, queens, n, container) {
+    if (row === n) {
+        // Highlight the final solution
+        for (let i = 0; i < n; i++) {
+            const col = queens[i];
+            highlightCell(i, col, container, '#2ecc71', 'Q');
+        }
+        return true;
+    } else {
+        for (let col = 0; col < n; col++) {
+            if (isSafe(row, col, queens)) {
+                queens[row] = col; // Place queen at (row, col)
+                highlightCell(row, col, container, '#3498db', '?'); // Highlight the cell
+
+                await new Promise(resolve => setTimeout(resolve, 500)); // Pause for visualization
+
+                if (await solveNQueensWithVisualization(row + 1, queens, n, container)) {
+                    return true;
+                }
+
+                // Backtrack: remove queen from (row, col)
+                highlightCell(row, col, container, '#e74c3c', 'NQ'); // Highlight the cell for backtracking
+                await new Promise(resolve => setTimeout(resolve, 500)); // Pause for visualization
+                queens[row] = -1;
+                highlightCell(row, col, container, '', ''); // Clear the cell highlight
+            }
+        }
+        return false;
+    }
+}
+
+function highlightCell(row, col, container, color, text) {
+    const cell = container.querySelector(`#cell-${row}-${col}`);
+    cell.style.backgroundColor = color;
+    cell.textContent = text;
+}
+
+function isSafe(row, col, queens) {
+    for (let i = 0; i < row; i++) {
+        const qCol = queens[i];
+        if (qCol === col || Math.abs(qCol - col) === Math.abs(i - row)) {
+            return false; // Column conflict or diagonal conflict
+        }
+    }
+    return true;
+}
+
+function solveNQueens(n) {
+    const solutions = [];
+    const queens = Array(n).fill(-1); // queens[i] represents the column position of the queen in the i-th row
+    solve(0, queens, n, solutions);
+    return solutions;
+}
+
+function solve(row, queens, n, solutions) {
+    if (row === n) {
+        solutions.push(createBoard(queens, n));
+    } else {
+        for (let col = 0; col < n; col++) {
+            if (isSafe(row, col, queens)) {
+                queens[row] = col; // Place queen at (row, col)
+                solve(row + 1, queens, n, solutions);
+                queens[row] = -1; // Backtrack: remove queen from (row, col)
+            }
+        }
+    }
+}
+
+function createBoard(queens, n) {
+    const board = [];
+    for (let i = 0; i < n; i++) {
+        let row = '';
+        for (let j = 0; j < n; j++) {
+            row += (queens[i] === j) ? 'Q' : '.';
+        }
+        board.push(row);
+    }
+    return board;
 }
 
 function visualizeBubbleSort() {
     const container = document.getElementById('visualizer');
+    container.innerHTML = '';
+
+    const array = generateArray(50);
+    visualizeArray(array, container);
+
+    const exampleContainer = document.createElement('div');
+    exampleContainer.className = 'example-container';
+    exampleContainer.id = 'example-container';
+    visualizeArray(array, exampleContainer);
+    container.appendChild(exampleContainer);
+
+    startBubbleSortVisualization();
+}
+
+function startBubbleSortVisualization() {
+    const container = document.getElementById('visualizer');
+    const exampleContainer = document.getElementById('example-container');
+    exampleContainer.remove();
+
     const array = generateArray(50);
     visualizeArray(array, container);
     bubbleSort(array.slice(), container);
@@ -114,6 +285,25 @@ function visualizeBubbleSort() {
 
 function visualizeQuickSort() {
     const container = document.getElementById('visualizer');
+    container.innerHTML = '';
+
+    const array = generateArray(50);
+    visualizeArray(array, container);
+
+    const exampleContainer = document.createElement('div');
+    exampleContainer.className = 'example-container';
+    exampleContainer.id = 'example-container';
+    visualizeArray(array, exampleContainer);
+    container.appendChild(exampleContainer);
+
+    startQuickSortVisualization();
+}
+
+function startQuickSortVisualization() {
+    const container = document.getElementById('visualizer');
+    const exampleContainer = document.getElementById('example-container');
+    exampleContainer.remove();
+
     const array = generateArray(50);
     visualizeArray(array, container);
     quickSort(array.slice(), 0, array.length - 1, container);
@@ -121,6 +311,23 @@ function visualizeQuickSort() {
 
 function visualizeBFS() {
     const container = document.getElementById('visualizer');
+    container.innerHTML = '';
+
+    const graph = generateBinaryTreeGraph();
+    const exampleContainer = document.createElement('div');
+    exampleContainer.className = 'example-container';
+    exampleContainer.id = 'example-container';
+    drawBinaryTreeGraph(graph, exampleContainer);
+    container.appendChild(exampleContainer);
+
+    startBFSVisualization();
+}
+
+function startBFSVisualization() {
+    const container = document.getElementById('visualizer');
+    const exampleContainer = document.getElementById('example-container');
+    exampleContainer.remove();
+
     const graph = generateBinaryTreeGraph();
     drawBinaryTreeGraph(graph, container);
     bfs(graph, 0, container);
@@ -128,6 +335,23 @@ function visualizeBFS() {
 
 function visualizeDFS() {
     const container = document.getElementById('visualizer');
+    container.innerHTML = '';
+
+    const graph = generateBinaryTreeGraph();
+    const exampleContainer = document.createElement('div');
+    exampleContainer.className = 'example-container';
+    exampleContainer.id = 'example-container';
+    drawBinaryTreeGraph(graph, exampleContainer);
+    container.appendChild(exampleContainer);
+
+    startDFSVisualization();
+}
+
+function startDFSVisualization() {
+    const container = document.getElementById('visualizer');
+    const exampleContainer = document.getElementById('example-container');
+    exampleContainer.remove();
+
     const graph = generateBinaryTreeGraph();
     drawBinaryTreeGraph(graph, container);
     dfs(graph, 0, container);
@@ -156,10 +380,28 @@ function visualizeSearch() {
 
 function visualizeDijkstra() {
     const container = document.getElementById('visualizer');
+    container.innerHTML = '';
+
+    const graph = generateComplexGraph();
+    const exampleContainer = document.createElement('div');
+    exampleContainer.className = 'example-container';
+    exampleContainer.id = 'example-container';
+    drawComplexGraph(graph, exampleContainer);
+    container.appendChild(exampleContainer);
+
+    startDijkstraVisualization();
+}
+
+function startDijkstraVisualization() {
+    const container = document.getElementById('visualizer');
+    const exampleContainer = document.getElementById('example-container');
+    exampleContainer.remove();
+
     const graph = generateComplexGraph();
     drawComplexGraph(graph, container);
     dijkstra(graph, 0, container); // Example starting node
 }
+
 function generateComplexGraph() {
     return {
         nodes: [
@@ -176,7 +418,6 @@ function generateComplexGraph() {
         ]
     };
 }
-
 
 function drawComplexGraph(graph, container) {
     const canvas = document.createElement('canvas');
@@ -224,9 +465,6 @@ function drawComplexGraph(graph, container) {
         });
     });
 }
-
-
-
 
 function generateArray(size) {
     let array = [];
@@ -470,6 +708,7 @@ function highlightNode(node, container) {
     ctx.textBaseline = 'middle';
     ctx.fillText(node, pos.x, pos.y);
 }
+
 async function bubbleSort(array, container) {
     let n = array.length;
     for (let i = 0; i < n - 1; i++) {
@@ -483,6 +722,7 @@ async function bubbleSort(array, container) {
     }
     visualizeArray(array, container); // Final state
 }
+
 async function quickSort(array, low, high, container) {
     if (low < high) {
         let pi = await partition(array, low, high, container);
@@ -510,7 +750,6 @@ async function partition(array, low, high, container) {
     await new Promise(resolve => setTimeout(resolve, 100));
     return i + 1;
 }
-
 
 async function dijkstra(graph, start, container) {
     const positions = {
@@ -570,5 +809,91 @@ async function dijkstra(graph, start, container) {
         await new Promise(resolve => setTimeout(resolve, 1000));
     }
 }
+function visualizeCoinChange() {
+    const container = document.getElementById('visualizer');
+    container.innerHTML = '';
 
+    const problemDescription = document.createElement('div');
+    problemDescription.className = 'problem-description';
+    problemDescription.innerHTML = `
+        <h3>Coin Change Problem</h3>
+        <p>Given an array of coin denominations and an amount, find the minimum number of coins required to make the amount. If it's not possible to make the amount with the given coins, return -1.</p>
+        <p><strong>Example:</strong></p>
+        <p>Coins: [1, 5, 10, 25]</p>
+        <p>Amount: 63</p>
+    `;
+    container.appendChild(problemDescription);
 
+    const coins = [1, 5, 10, 25];
+    const amount = 63;
+
+    visualizeMinCoins(coins, amount, container);
+}
+
+async function visualizeMinCoins(coins, amount, container) {
+    let remainingAmount = amount;
+    let coinCounts = {};
+
+    coins.sort((a, b) => b - a);
+
+    const stepsContainer = document.createElement('div');
+    stepsContainer.className = 'steps-container';
+    container.appendChild(stepsContainer);
+
+    for (let coin of coins) {
+        if (remainingAmount >= coin) {
+            let numCoins = Math.floor(remainingAmount / coin);
+            remainingAmount -= numCoins * coin;
+            coinCounts[coin] = numCoins;
+
+            await visualizeStep(coin, numCoins, stepsContainer);
+        } else {
+            coinCounts[coin] = 0;
+        }
+    }
+
+    if (remainingAmount !== 0) {
+        const resultText = document.createElement('div');
+        resultText.textContent = "It's not possible to give change for the amount with the given coins.";
+        resultText.style.marginTop = '20px';
+        resultText.style.fontSize = '18px';
+        resultText.style.fontWeight = 'bold';
+        container.appendChild(resultText);
+    }
+}
+
+async function visualizeStep(coin, numCoins, container) {
+    for (let i = 0; i < numCoins; i++) {
+        const coinAnimation = document.createElement('div');
+        coinAnimation.className = 'coin-animation';
+        coinAnimation.textContent = coin;
+        coinAnimation.style.display = 'inline-block';
+        coinAnimation.style.margin = '5px';
+        coinAnimation.style.padding = '10px';
+        coinAnimation.style.backgroundColor = '#f1c40f';
+        coinAnimation.style.color = '#fff';
+        coinAnimation.style.borderRadius = '50%';
+        coinAnimation.style.fontSize = '16px';
+        coinAnimation.style.textAlign = 'center';
+        coinAnimation.style.opacity = '0';
+        coinAnimation.style.transition = 'opacity 0.5s, transform 0.5s';
+        coinAnimation.style.transform = 'translateY(-20px)';
+
+        container.appendChild(coinAnimation);
+
+        await new Promise(resolve => setTimeout(() => {
+            coinAnimation.style.opacity = '1';
+            coinAnimation.style.transform = 'translateY(0)';
+            resolve();
+        }, 500 * i));
+
+        await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    const selectElement = document.getElementById("algorithm");
+    if (selectElement) {
+        selectElement.addEventListener("change", loadVisualization);
+    }
+});

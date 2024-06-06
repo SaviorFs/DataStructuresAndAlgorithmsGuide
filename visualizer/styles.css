@@ -2,16 +2,24 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    height: 100vh;
-    margin: 0;
     font-family: Arial, sans-serif;
     background-color: #f4f4f4;
+    margin: 0;
+    padding: 20px;
+}
+
+label {
+    margin: 10px;
+}
+
+select {
+    margin: 10px;
+    padding: 5px;
 }
 
 #visualizer {
     width: 80%;
-    height: 60%;
+    height: 60vh;
     border: 1px solid #ccc;
     margin-top: 20px;
     background-color: #fff;
@@ -19,15 +27,91 @@ body {
 
 pre {
     width: 80%;
-    height: 30%;
-    border: 1px solid #ccc;
-    margin-top: 20px;
-    padding: 10px;
+    height: 200px;
     background-color: #eee;
+    padding: 20px;
+    border: 1px solid #ccc;
     overflow: auto;
+    margin-top: 20px;
 }
 
-select {
+.board-container, .solution-container, .example-container {
+    display: inline-block;
     margin: 10px;
-    padding: 5px;
+    border: 1px solid #000;
 }
+
+.row {
+    display: flex;
+}
+
+.cell {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #000;
+    font-size: 24px;
+    transition: background-color 0.5s;
+}
+
+.steps-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.step-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+.coin-element {
+    display: inline-block;
+    margin-right: 20px;
+    padding: 10px;
+    background-color: #3498db;
+    color: #fff;
+    border-radius: 5px;
+    font-size: 16px;
+    text-align: center;
+}
+
+.remaining-amount-element {
+    display: inline-block;
+    padding: 10px;
+    background-color: #e74c3c;
+    color: #fff;
+    border-radius: 5px;
+    font-size: 16px;
+    text-align: center;
+}
+
+.coin-animation {
+    display: inline-block;
+    margin: 5px;
+    padding: 10px;
+    background-color: #f1c40f;
+    color: #fff;
+    border-radius: 50%;
+    font-size: 16px;
+    text-align: center;
+    opacity: 0;
+    transition: opacity 0.5s, transform 0.5s;
+    transform: translateY(-20px);
+}
+
+.problem-description {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.problem-description h3 {
+    margin: 0;
+}
+
+.problem-description p {
+    m
