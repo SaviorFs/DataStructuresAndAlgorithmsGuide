@@ -390,33 +390,37 @@ async function visualizeMinCoins(coins, amount, container) {
         }
     }
 
-    if (remainingAmount !== 0) {
-        const resultText = document.createElement('div');
-        resultText.textContent = "It's not possible to give change for the amount with the given coins.";
-        resultText.style.marginTop = '20px';
-        resultText.style.fontSize = '18px';
-        resultText.style.fontWeight = 'bold';
-        container.appendChild(resultText);
-    }
+    const resultText = document.createElement('div');
+    resultText.textContent = `Minimum number of coins: ${Object.values(coinCounts).reduce((a, b) => a + b, 0)}`;
+    resultText.style.marginTop = '20px';
+    resultText.style.fontSize = '18px';
+    resultText.style.fontWeight = 'bold';
+    container.appendChild(resultText);
 }
 
 async function visualizeStep(coin, numCoins, container) {
+    const stepContainer = document.createElement('div');
+    stepContainer.className = 'step-container';
+
+    const coinElement = document.createElement('div');
+    coinElement.className = 'coin-element';
+    coinElement.textContent = `${numCoins} x ${coin}`;
+    stepContainer.appendChild(coinElement);
+
+    const coinRow = document.createElement('div');
+    coinRow.className = 'coin-row';
+
     for (let i = 0; i < numCoins; i++) {
         const coinAnimation = document.createElement('div');
         coinAnimation.className = 'coin-animation';
         coinAnimation.textContent = coin;
-        coinAnimation.style.display = 'inline-block';
-        coinAnimation.style.margin = '5px';
-        coinAnimation.style.padding = '10px';
-        coinAnimation.style.backgroundColor = '#f1c40f';
-        coinAnimation.style.color = '#fff';
-        coinAnimation.style.borderRadius = '50%';
-        coinAnimation.style.fontSize = '16px';
-        coinAnimation.style.textAlign = 'center';
-        container.appendChild(coinAnimation);
-
-        await new Promise(resolve => setTimeout(resolve, 500));
+        coinRow.appendChild(coinAnimation);
     }
+
+    stepContainer.appendChild(coinRow);
+    container.appendChild(stepContainer);
+
+    await new Promise(resolve => setTimeout(resolve, 500));
 }
 
 export function visualizeHashMapInsert() {
@@ -475,36 +479,3 @@ function insertIntoHashMap(hashMap, key, value, table) {
     row.appendChild(valueCell);
     table.appendChild(row);
 }
-
-// Helper CSS to style the visualization
-const style = document.createElement('style');
-style.innerHTML = `
-    .hashmap-table {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 5px;
-        width: 50%;
-        margin: 20px auto;
-        border: 1px solid #ddd;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    }
-
-    .row {
-        display: contents;
-    }
-
-    .cell {
-        padding: 10px;
-        border: 1px solid #ddd;
-        text-align: center;
-        background-color: #f4f4f4;
-        transition: background-color 0.5s;
-    }
-
-    .header {
-        font-weight: bold;
-        background-color: #3498db;
-        color: white;
-    }
-`;
-document.head.appendChild(style);

@@ -59,8 +59,8 @@ export function loadVisualization() {
     codeSampleContainer.textContent = '';
 
     let filePath;
-    if (["Insertion", "Deletion", "Search"].includes(selectedAlgorithm)) {
-        filePath = `./data-structures/arrays/${selectedAlgorithm}.java`;
+    if (["Array Insertion", "Array Deletion", "Array Search"].includes(selectedAlgorithm)) {
+        filePath = `./data-structures/arrays/${selectedAlgorithm.split(" ")[1]}.java`;
     } else if (["BFS", "DFS", "Dijkstra"].includes(selectedAlgorithm)) {
         filePath = `./algorithms/searching/${selectedAlgorithm}.java`;
     } else if (["BubbleSort", "QuickSort"].includes(selectedAlgorithm)) {
@@ -69,6 +69,8 @@ export function loadVisualization() {
         filePath = `./algorithms/greedy/${selectedAlgorithm}.java`;
     } else if (["NQueens"].includes(selectedAlgorithm)) {
         filePath = `./algorithms/backtracking/${selectedAlgorithm}.java`;
+    } else if (["HashMap Insert", "HashMap Delete", "HashMap Search"].includes(selectedAlgorithm)) {
+        filePath = `./data-structures/hash-tables/HashMap${selectedAlgorithm.split(" ")[1]}.java`;
     } else {
         filePath = `./algorithms/${selectedAlgorithm.toLowerCase()}/${selectedAlgorithm}.java`;
     }
@@ -96,11 +98,11 @@ export function loadVisualization() {
         visualizeBFS();
     } else if (selectedAlgorithm === "DFS") {
         visualizeDFS();
-    } else if (selectedAlgorithm === "Insertion") {
+    } else if (selectedAlgorithm === "Array Insertion") {
         visualizeInsertion();
-    } else if (selectedAlgorithm === "Deletion") {
+    } else if (selectedAlgorithm === "Array Deletion") {
         visualizeDeletion();
-    } else if (selectedAlgorithm === "Search") {
+    } else if (selectedAlgorithm === "Array Search") {
         visualizeSearch();
     } else if (selectedAlgorithm === "Dijkstra") {
         visualizeDijkstra();
@@ -108,7 +110,7 @@ export function loadVisualization() {
         visualizeNQueens();
     } else if (selectedAlgorithm === "CoinChange") {
         visualizeCoinChange();
-    } else if (selectedAlgorithm === "Insert") {
+    } else if (selectedAlgorithm === "HashMap Insert") {
         visualizeHashMapInsert();
     }
 }

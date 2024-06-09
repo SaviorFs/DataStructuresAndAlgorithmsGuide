@@ -46,8 +46,8 @@ pre {
 }
 
 .cell {
-    width: 40px;
-    height: 40px;
+    width: 60px;
+    height: 60px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -64,6 +64,7 @@ pre {
 
 .step-container {
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     margin-top: 10px;
@@ -99,9 +100,9 @@ pre {
     border-radius: 50%;
     font-size: 16px;
     text-align: center;
-    opacity: 0;
+    opacity: 1;
     transition: opacity 0.5s, transform 0.5s;
-    transform: translateY(-20px);
+    transform: translateY(0);
 }
 
 .problem-description {
@@ -114,5 +115,43 @@ pre {
 }
 
 .problem-description p {
-    m
+    margin: 10px 0;
+}
+
+.hashmap-table {
+    width: 50%;
+    margin: 20px auto;
+    border-collapse: collapse;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.hashmap-table th, .hashmap-table td {
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    text-align: center;
+}
+
+.hashmap-table th {
+    background-color: #f4f4f4;
+    font-weight: bold;
+}
+
+.hashmap-table td {
+    background-color: #fdfdfd;
+}
+
+.hashmap-table tr:nth-child(even) td {
+    background-color: #f9f9f9;
+}
+
+.hashmap-table tr:hover td {
+    background-color: #f1f1f1;
+}
+
+.coin-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
 }

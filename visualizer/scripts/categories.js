@@ -8,12 +8,12 @@ export const algorithms = {
     "greedy": ["CoinChange"],
     "backtracking": ["NQueens"],
     "searching": ["BFS", "DFS", "Dijkstra"],
-    "arrays": ["Insertion", "Deletion", "Search"],
-    "graphs": ["Insert", "Delete", "Search"],
-    "hash-tables": ["Insert", "Delete", "Search"],
-    "heaps": ["Insert", "Delete", "Search"],
-    "linked-lists": ["Insert", "Delete", "Search"],
-    "queues": ["Insert", "Delete", "Search"],
-    "stacks": ["Insert", "Delete", "Search"],
-    "trees": ["Insert", "Delete", "Search"]
+    "arrays": ["Array Insertion", "Array Deletion", "Array Search"],
+    "graphs": ["Graph Insert", "Graph Delete", "Graph Search"],
+    "hash-tables": ["HashMap Insert", "HashMap Delete", "HashMap Search"],
+    "heaps": ["Heap Insert", "Heap Delete", "Heap Search"],
+    "linked-lists": ["LinkedList Insert", "LinkedList Delete", "LinkedList Search"],
+    "queues": ["Queue Insert", "Queue Delete", "Queue Search"],
+    "stacks": ["Stack Insert", "Stack Delete", "Stack Search"],
+    "trees": ["Tree Insert", "Tree Delete", "Tree Search"]
 };
