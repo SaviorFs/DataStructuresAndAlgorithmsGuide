@@ -1,4 +1,9 @@
 import { categories, algorithms } from './categories.js';
+import { 
+    visualizeBubbleSort, visualizeQuickSort, visualizeBFS, visualizeDFS, 
+    visualizeInsertion, visualizeDeletion, visualizeSearch, visualizeDijkstra, 
+    visualizeNQueens, visualizeCoinChange, visualizeHashMapInsert 
+} from './visualizations.js';
 
 export function loadSubCategory() {
     const categorySelect = document.getElementById('category');
@@ -40,5 +45,70 @@ export function loadAlgorithm() {
         });
         
         algorithmSelect.disabled = false;
+    }
+}
+
+export function loadVisualization() {
+    const algorithmSelect = document.getElementById('algorithm');
+    const selectedAlgorithm = algorithmSelect.value;
+
+    const visualizerContainer = document.getElementById('visualizer');
+    const codeSampleContainer = document.getElementById('codeSample');
+
+    visualizerContainer.innerHTML = '';
+    codeSampleContainer.textContent = '';
+
+    let filePath;
+    if (["Insertion", "Deletion", "Search"].includes(selectedAlgorithm)) {
+        filePath = `./data-structures/arrays/${selectedAlgorithm}.java`;
+    } else if (["BFS", "DFS", "Dijkstra"].includes(selectedAlgorithm)) {
+        filePath = `./algorithms/searching/${selectedAlgorithm}.java`;
+    } else if (["BubbleSort", "QuickSort"].includes(selectedAlgorithm)) {
+        filePath = `./algorithms/sorting/${selectedAlgorithm}.java`;
+    } else if (["CoinChange"].includes(selectedAlgorithm)) {
+        filePath = `./algorithms/greedy/${selectedAlgorithm}.java`;
+    } else if (["NQueens"].includes(selectedAlgorithm)) {
+        filePath = `./algorithms/backtracking/${selectedAlgorithm}.java`;
+    } else {
+        filePath = `./algorithms/${selectedAlgorithm.toLowerCase()}/${selectedAlgorithm}.java`;
+    }
+
+    fetch(filePath)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.text();
+        })
+        .then(data => {
+            codeSampleContainer.textContent = data;
+        })
+        .catch(err => {
+            console.error('Failed to fetch Java code:', err);
+            codeSampleContainer.textContent = 'Error: Could not load the Java code.';
+        });
+
+    if (selectedAlgorithm === "BubbleSort") {
+        visualizeBubbleSort();
+    } else if (selectedAlgorithm === "QuickSort") {
+        visualizeQuickSort();
+    } else if (selectedAlgorithm === "BFS") {
+        visualizeBFS();
+    } else if (selectedAlgorithm === "DFS") {
+        visualizeDFS();
+    } else if (selectedAlgorithm === "Insertion") {
+        visualizeInsertion();
+    } else if (selectedAlgorithm === "Deletion") {
+        visualizeDeletion();
+    } else if (selectedAlgorithm === "Search") {
+        visualizeSearch();
+    } else if (selectedAlgorithm === "Dijkstra") {
+        visualizeDijkstra();
+    } else if (selectedAlgorithm === "NQueens") {
+        visualizeNQueens();
+    } else if (selectedAlgorithm === "CoinChange") {
+        visualizeCoinChange();
+    } else if (selectedAlgorithm === "Insert") {
+        visualizeHashMapInsert();
     }
 }

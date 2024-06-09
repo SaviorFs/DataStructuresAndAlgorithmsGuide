@@ -1,5 +1,4 @@
-import { loadSubCategory, loadAlgorithm } from './loadFunctions.js';
-import { loadVisualization } from './visualizations.js';
+import { loadSubCategory, loadAlgorithm, loadVisualization } from './loadFunctions.js';
 
 document.getElementById('category').addEventListener('change', loadSubCategory);
 document.getElementById('subCategory').addEventListener('change', loadAlgorithm);

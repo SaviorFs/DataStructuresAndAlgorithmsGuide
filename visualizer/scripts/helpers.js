@@ -333,7 +333,7 @@ export async function dijkstra(graph, start, container) {
                 ctx.strokeStyle = '#e74c3c';
                 ctx.stroke();
                 ctx.fillStyle = '#000';
-                ctx.fillText(weight, (uPos.x + vPos.x) / 2, (uPos.y + vPos.y) / 2);
+                ctx.fillText(weight, (uPos.x + vPos.x) / 2, (uPos.y + toPos.y) / 2);
                 ctx.strokeStyle = '#000'; // Reset to default
             }
         }
