@@ -1,3 +1,4 @@
+// categories.js
 export const categories = {
     "algorithms": ["backtracking", "divide-and-conquer", "dynamic-programming", "greedy", "searching", "sorting"],
     "data-structures": ["arrays", "graphs", "hash-tables", "heaps", "linked-lists", "queues", "stacks", "trees"]
@@ -15,5 +16,6 @@ export const algorithms = {
     "linked-lists": ["LinkedList Insert", "LinkedList Delete", "LinkedList Search"],
     "queues": ["Queue Insert", "Queue Delete", "Queue Search"],
     "stacks": ["Stack Insert", "Stack Delete", "Stack Search"],
-    "trees": ["Tree Insert", "Tree Delete", "Tree Search"]
+    "trees": ["Tree Insert", "Tree Delete", "Tree Search"],
+    "divide-and-conquer": ["MaxSubarray"]
 };
